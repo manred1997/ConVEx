@@ -1,5 +1,5 @@
 from transformers.models.roberta.modeling_roberta import RobertaModel, RobertaPreTrainedModel
-from model import EnrichBlock, Feedforward, SlotClassifier
+from model.module import EnrichBlock, Feedforward, SlotClassifier
 
 import torch.nn as nn
 from torchcrf import CRF
@@ -24,10 +24,10 @@ class ConVEx(RobertaPreTrainedModel):
                                         dropout=args.dropout)
             for _ in range(args.n_layers)
         ])
-        self.slot_classifier = SlotClassifier(args.output_representation, 4, args.droupout)
+        self.slot_classifier = SlotClassifier(args.output_representation, 6, args.dropout)
 
         if args.use_crf:
-            self.crf = CRF(num_tags=4, batch_first=True)
+            self.crf = CRF(num_tags=6, batch_first=True)
 
     def forward(self,
                 input_ids,
@@ -49,7 +49,7 @@ class ConVEx(RobertaPreTrainedModel):
 
         for enrich_block in self.layer_stack:
             enc_input, input_slf_attn, input_temp_attn = enrich_block(
-                enc_input, enc_template, slf_attn_mask=input_attn_mask, enc_temp_attn_mask=template_attn_mask)
+                enc_input, enc_template, slf_attn_mask=input_attn_mask, input_temp_attn_mask=template_attn_mask)
             input_slf_attn_list += [input_slf_attn] if return_attns else []
             input_temp_attn_list += [input_temp_attn] if return_attns else []
 
@@ -65,11 +65,11 @@ class ConVEx(RobertaPreTrainedModel):
                 # Only keep active parts of the loss
                 if input_attn_mask is not None:
                     active_loss = input_attn_mask.view(-1) == 1
-                    active_logits = slot_logits.view(-1, 4)[active_loss]
+                    active_logits = slot_logits.view(-1, 6)[active_loss]
                     active_labels = trg_seq.view(-1)[active_loss]
                     slot_loss = slot_loss_fct(active_logits, active_labels)
                 else:
-                    slot_loss = slot_loss_fct(slot_logits.view(-1, 4), trg_seq.view(-1))
+                    slot_loss = slot_loss_fct(slot_logits.view(-1, 6), trg_seq.view(-1))
                 
             total_loss += slot_loss
         

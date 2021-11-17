@@ -241,12 +241,12 @@ def convert_examples_to_features(examples, max_seq_len, tokenizer,
 
 
 def load_and_cache_examples(args, tokenizer, mode):
-    processor = processors[args.task](args)
+    processor = processors[args.model_type](args)
 
     # Load data features from cache or dataset file
     cached_features_file = os.path.join(
         args.data_dir,
-        'cached_{}_{}_{}_{}'.format(
+        'cached_{}_{}_{}'.format(
             mode,
             list(filter(None, args.model_name_or_path.split("/"))).pop(),
             args.max_seq_len

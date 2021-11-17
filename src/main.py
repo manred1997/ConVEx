@@ -15,7 +15,7 @@ def main(args):
     tokenizer = load_tokenizer(args)
     
     train_dataset = load_and_cache_examples(args, tokenizer, 'train')
-    eval_dataset = load_and_cache_examples(args, tokenizer, 'test')
+    eval_dataset = load_and_cache_examples(args, tokenizer, 'dev')
 
     trainer = Trainer(args=args, train_dataset=train_dataset, test_dataset=eval_dataset)
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     parser.add_argument("--pretrained_path", default="./HnBert", type=str, help="The pretrained model path")
 
     # Training Task
-    parser.add_argument("--output_dim_ffn", type=int, default=128, help="Dimension of hidden representation after feed embedding representation of backbone")
+    parser.add_argument("--output_representation", type=int, default=128, help="Dimension of hidden representation after feed embedding representation of backbone")
     parser.add_argument("--num_attn_heads_enrich", type=int, default=4, help="Number of multi head attention of riched block")
     parser.add_argument("--hidden_inner", type=int, default=512, help="Dimension of inner hidden representation of FFN")
     parser.add_argument("--n_layers", type=int, default=2, help="Number of enriched block")
@@ -98,6 +98,12 @@ if __name__ == '__main__':
         default=50,
         help="Number of unincreased validation step to wait for early stopping",
     )
+
+    # CRF option
+    parser.add_argument("--use_crf", action="store_true", help="Whether to use CRF")
+    parser.add_argument("--slot_pad_label", default="PAD", type=str, help="Pad token for slot label pad (to be ignore when calculate loss)")
+
+    
     parser.add_argument("--tuning_metric", default="loss", type=str, help="Metrics to tune when training")
     
     parser.add_argument("--ignore_index", default=0, type=int,

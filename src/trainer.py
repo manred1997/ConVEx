@@ -159,7 +159,7 @@ class Trainer(object):
                     global_step += 1
 
                 if self.args.logging_steps > 0 and global_step % self.args.logging_steps == 0:
-                    dev_result = self.evaluate('test')
+                    dev_result = self.evaluate('dev')
                     # pass
                     print(f'[TRAIN] Loss : {tr_loss/global_step}')
 

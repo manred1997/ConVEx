@@ -5,19 +5,17 @@ from transformers import (
     RobertaConfig
 )
 
-from model import HnBertModel
+from model import ConVEx
 
 import os
 from seqeval.metrics import f1_score, precision_score, recall_score
 
 MODEL_CLASSES = {
-    'phobert': (RobertaConfig, HnBertModel, AutoTokenizer),
-    "hnbert": (RobertaConfig, HnBertModel, AutoTokenizer)
+    "phobert": (RobertaConfig, ConVEx, AutoTokenizer)
 }
 
 MODEL_PATH_MAP = {
-    "phobert" : "/workspace/vinbrain/minhnp/pretrainedLM/phobert-base",
-    "hnbert": "/workspace/vinbrain/minhnp/HnBERT/ViHNews-BERT/pretraining/notebook/ckpt_v1/checkpoint-218000"
+    "phobert" : "vinai/phobert-base"
 }
 
 def init_logger():
@@ -28,8 +26,8 @@ def init_logger():
     )
 
 def load_tokenizer(args):
-    return MODEL_CLASSES[args.model_type][2].from_pretrained("/workspace/vinbrain/minhnp/pretrainedLM/phobert-base")
-#     return MODEL_CLASSES[args.model_type][2].from_pretrained(args.model_name_or_path)
+    # return MODEL_CLASSES[args.model_type][2].from_pretrained("/workspace/vinbrain/minhnp/pretrainedLM/phobert-base")
+    return MODEL_CLASSES[args.model_type][2].from_pretrained(args.model_name_or_path)
 
 def get_slot_labels(args):
     return [label.strip() for label in open(os.path.join(args.data_dir, 'label.txt'), 'r', encoding='utf-8')]

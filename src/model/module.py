@@ -90,6 +90,8 @@ class ScaledDotProductAttention(nn.Module):
         attn = torch.matmul(q / self.temperature, k.transpose(2, 3)) # BS X HEAD X LEN X LEN
 
         if mask is not None:
+            # print(attn.shape)
+            # print(mask.shape)
             attn = attn.masked_fill(mask == 0, -1e9)
 
         attn = self.dropout(F.softmax(attn, dim=-1))
@@ -136,6 +138,7 @@ class MultiHeadAttention(nn.Module):
         q, k, v = q.transpose(1, 2), k.transpose(1, 2), v.transpose(1, 2)
 
         if mask is not None:
+            mask = mask.unsqueeze(-2)
             mask = mask.unsqueeze(1)   # For head axis broadcasting. 
 
         q, attn = self.attention(q, k, v, mask=mask)
