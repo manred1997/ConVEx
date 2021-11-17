@@ -22,14 +22,14 @@ class EarlyStopping:
         self.early_stop = False
         self.val_loss_min = np.Inf
 
-    def __call__(self, val_loss, model, args):
+    def __call__(self, result, model, args):
         if args.tuning_metric == "loss":
-            score = -val_loss
+            score = -result[args.tuning_metric]
         else:
-            score = val_loss
+            score = result[args.tuning_metric]
         if self.best_score is None:
             self.best_score = score
-            self.save_checkpoint(val_loss, model, args)
+            self.save_checkpoint(score, model, args)
         elif score < self.best_score:
             self.counter += 1
             print(f"EarlyStopping counter: {self.counter} out of {self.patience}")
@@ -37,21 +37,21 @@ class EarlyStopping:
                 self.early_stop = True
         else:
             self.best_score = score
-            self.save_checkpoint(val_loss, model, args)
+            self.save_checkpoint(score, model, args)
             self.counter = 0
 
-    def save_checkpoint(self, val_loss, model, args):
+    def save_checkpoint(self, score, model, args):
         """Saves model when validation loss decreases or accuracy/f1 increases."""
         if self.verbose:
             if args.tuning_metric == "loss":
-                print(f"Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ...")
+                print(f"Validation loss decreased ({self.val_loss_min:.6f} --> {score:.6f}).  Saving model ...")
             else:
                 print(
-                    f"{args.tuning_metric} increased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ..."
+                    f"{args.tuning_metric} increased ({self.val_loss_min:.6f} --> {score:.6f}).  Saving model ..."
                 )
         model.save_pretrained(args.model_dir)
         torch.save(args, os.path.join(args.model_dir, "training_args.bin"))
-        self.val_loss_min = val_loss
+        self.val_loss_min = score
 
         # # Save model checkpoint (Overwrite)
         # if not os.path.exists(self.args.model_dir):

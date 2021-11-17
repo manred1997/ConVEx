@@ -17,7 +17,7 @@ def main(args):
     train_dataset = load_and_cache_examples(args, tokenizer, 'train')
     eval_dataset = load_and_cache_examples(args, tokenizer, 'dev')
 
-    trainer = Trainer(args=args, train_dataset=train_dataset, test_dataset=eval_dataset)
+    trainer = Trainer(args=args, train_dataset=train_dataset, dev_dataset=eval_dataset)
 
     if args.do_train:
         trainer.train()
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     )
     parser.add_argument("--learning_rate", default=1e-5, type=float, help="The initial learning rate for Adam.")
     parser.add_argument(
-        "--num_train_epochs", default=2.0, type=float, help="Total number of training epochs to perform."
+        "--num_train_epochs", default=100, type=float, help="Total number of training epochs to perform."
     )
     parser.add_argument("--weight_decay", default=0.0, type=float, help="Weight decay if we apply some.")
     parser.add_argument(
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     parser.add_argument("--use_crf", action="store_true", help="Whether to use CRF")
     parser.add_argument("--slot_pad_label", default="PAD", type=str, help="Pad token for slot label pad (to be ignore when calculate loss)")
 
-    
+
     parser.add_argument("--tuning_metric", default="loss", type=str, help="Metrics to tune when training")
     
     parser.add_argument("--ignore_index", default=0, type=int,

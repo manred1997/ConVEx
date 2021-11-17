@@ -163,7 +163,7 @@ class Trainer(object):
                     # pass
                     print(f'[TRAIN] Loss : {tr_loss/global_step}')
 
-                    early_stopping(dev_result, self.model.roberta, self.args)
+                    early_stopping(dev_result, self.model, self.args)
                     if early_stopping.early_stop:
                         print("Early stopping")
                         break
@@ -262,7 +262,7 @@ class Trainer(object):
         for key in sorted(results.keys()):
             logger.info("  %s = %s", key, str(results[key]))
 
-        return eval_loss/nb_eval_steps
+        return results
 
     def save_model(self, output_dir: Optional[str] = None):
         """
